@@ -78,36 +78,30 @@ impl FromStr for Game {
 fn main() {
     let input_string = std::fs::read_to_string("src/input").expect("where input file?!");
 
-    let red_max = 12;
-    let green_max = 13;
-    let blue_max = 14;
-
-    let mut possible_games_id = 0;
+    let mut possible_games_value = 0;
 
     let lines = input_string.lines();
 
-    'lines: for line in lines {
+    for line in lines {
         let game_result = Game::from_str(line);
 
         if let Ok(game) = game_result {
             let draws = &game.draws;
 
-            for draw in draws {
-                if draw.green > green_max {
-                    continue 'lines;
-                }
+            // set to 1 so when we multiply it works.
+            let mut total_greens: usize = 1;
+            let mut total_blues: usize = 1;
+            let mut total_reds: usize = 1;
 
-                if draw.red > red_max {
-                    continue 'lines;
-                }
-                if draw.blue > blue_max {
-                    continue 'lines;
-                }
+            for draw in draws {
+                total_greens = std::cmp::max(draw.green, total_greens);
+                total_blues = std::cmp::max(draw.blue, total_blues);
+                total_reds = std::cmp::max(draw.red, total_reds);
             }
             
-            possible_games_id += game.id;
+            possible_games_value += total_reds * total_blues * total_greens;
         }
     }
 
-    println!("possible game {}", possible_games_id);
+    println!("possible game {}", possible_games_value);
 }
